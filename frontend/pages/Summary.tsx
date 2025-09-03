@@ -9,7 +9,7 @@ import { useToast } from '@/components/ui/use-toast';
 const Summary: React.FC = () => {
   const [summary, setSummary] = useState<SummaryResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [classFilter, setClassFilter] = useState('');
+  const [classFilter, setClassFilter] = useState('all');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const Summary: React.FC = () => {
   const fetchSummary = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.getSummary(classFilter || undefined);
+      const response = await apiClient.getSummary(classFilter === 'all' ? undefined : classFilter);
       setSummary(response);
     } catch (error) {
       console.error('Failed to fetch summary:', error);
@@ -115,7 +115,7 @@ const Summary: React.FC = () => {
             <SelectValue placeholder="All Classes" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Classes</SelectItem>
+            <SelectItem value="all">All Classes</SelectItem>
             <SelectItem value="Pre-K">Pre-K</SelectItem>
             <SelectItem value="Kindergarten">Kindergarten</SelectItem>
             <SelectItem value="Grade 1">Grade 1</SelectItem>

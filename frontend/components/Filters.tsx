@@ -38,7 +38,7 @@ const Filters: React.FC<FiltersProps> = ({
           <SelectValue placeholder="All Stages" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Stages</SelectItem>
+          <SelectItem value="all">All Stages</SelectItem>
           <SelectItem value="new">New</SelectItem>
           <SelectItem value="contacted">Contacted</SelectItem>
           <SelectItem value="scheduled">Scheduled</SelectItem>
@@ -52,7 +52,7 @@ const Filters: React.FC<FiltersProps> = ({
           <SelectValue placeholder="All Classes" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Classes</SelectItem>
+          <SelectItem value="all">All Classes</SelectItem>
           <SelectItem value="Pre-K">Pre-K</SelectItem>
           <SelectItem value="Kindergarten">Kindergarten</SelectItem>
           <SelectItem value="Grade 1">Grade 1</SelectItem>

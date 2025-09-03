@@ -14,8 +14,8 @@ const EnquiryList: React.FC = () => {
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [stageFilter, setStageFilter] = useState('');
-  const [classFilter, setClassFilter] = useState('');
+  const [stageFilter, setStageFilter] = useState('all');
+  const [classFilter, setClassFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const { toast } = useToast();
@@ -26,8 +26,8 @@ const EnquiryList: React.FC = () => {
     try {
       setLoading(true);
       const response = await apiClient.listEnquiries({
-        stage: stageFilter || undefined,
-        class: classFilter || undefined,
+        stage: stageFilter === 'all' ? undefined : stageFilter,
+        class: classFilter === 'all' ? undefined : classFilter,
         q: searchQuery || undefined,
         limit: itemsPerPage,
         offset: (currentPage - 1) * itemsPerPage,
@@ -99,7 +99,7 @@ const EnquiryList: React.FC = () => {
         <Card>
           <CardContent className="text-center py-12">
             <div className="text-gray-500">
-              {searchQuery || stageFilter || classFilter
+              {searchQuery || stageFilter !== 'all' || classFilter !== 'all'
                 ? 'No enquiries match your current filters.'
                 : 'No enquiries found. Create your first enquiry to get started.'}
             </div>
