@@ -24,13 +24,17 @@ export const createEnquiry = api<CreateEnquiryRequest, CreateResponse>(
     const phonePattern = /^[0-9+\-\s]{7,15}$/;
     const trimmedPhone = req.phone.trim();
     if (!phonePattern.test(trimmedPhone)) {
-      throw APIError.invalidArgument("phone must be 7-15 characters with numbers, +, -, or spaces only");
+      throw APIError.invalidArgument(
+        "phone must be 7-15 characters with numbers, +, -, or spaces only"
+      );
     }
 
     const row = await db.queryRow<{ id: number }>`
       INSERT INTO enquiries (student_name, class_applied, guardian_name, phone, source, notes)
       VALUES (${req.student_name.trim()}, ${req.class_applied.trim()}, ${req.guardian_name.trim()}, 
-              ${trimmedPhone}, ${req.source?.trim() || null}, ${req.notes?.trim() || null})
+              ${trimmedPhone}, ${req.source?.trim() || null}, ${
+      req.notes?.trim() || null
+    })
       RETURNING id
     `;
 
@@ -39,5 +43,24 @@ export const createEnquiry = api<CreateEnquiryRequest, CreateResponse>(
     }
 
     return { id: row.id };
+  }
+);
+
+// Deletes an enquiry by ID.
+export const deleteEnquiry = api<{ id: number }, void>(
+  { expose: true, method: "DELETE", path: "/enquiries/:id" },
+  async ({ id }) => {
+    // Check if enquiry exists
+    const exists = await db.queryRow<{ id: number }>`
+      SELECT id FROM enquiries WHERE id = ${id}
+    `;
+    if (!exists) {
+      throw APIError.notFound("Enquiry not found");
+    }
+
+    await db.query`
+      DELETE FROM enquiries WHERE id = ${id}
+    `;
+    // No response body needed for DELETE
   }
 );

@@ -1,6 +1,96 @@
 # Admissions CRM & Enquiry Tracker
 
-A full-stack application for managing student admissions enquiries with follow-up tracking and conversion reporting.
+This is a web app to track school admissions enquiries.  
+It has two parts:
+
+- **Backend** (database and API, built with Encore)
+- **Frontend** (website, built with React)
+
+## How to Run This Project (Easy Steps)
+
+### 1. Install Prerequisites
+
+- **Node.js** (for frontend): [Download Node.js](https://nodejs.org/)
+- **Encore** (for backend): [Get Encore](https://encore.dev/docs/get-started/install)
+- **Git** (optional, for code): [Download Git](https://git-scm.com/)
+
+### 2. Clone the Project
+
+Open your terminal and run:
+
+```
+git clone https://github.com/your-username/admissions-crm-tracker.git
+```
+
+Then go into the project folder:
+
+```
+cd admissions-crm-tracker
+```
+
+### 3. Start the Backend (Encore API)
+
+Go to the backend folder:
+
+```
+cd backend
+```
+
+Start the Encore API server:
+
+```
+encore run
+```
+
+This will start the backend on something like `http://localhost:4000`.
+
+### 4. Start the Frontend (React App)
+
+Open a new terminal window.  
+Go to the frontend folder:
+
+```
+cd frontend
+```
+
+Install the frontend dependencies:
+
+```
+npm install
+```
+
+Start the frontend server:
+
+```
+npm run dev
+```
+
+This will open the website at `http://localhost:5173`.
+
+### 5. Use the App
+
+- Open your browser and go to `http://localhost:5173`
+- You can add, edit, and delete enquiries.
+
+### 6. Common Problems
+
+- If you see errors about "API endpoint" or "Failed to fetch", make sure the backend is running (`encore run`) and your frontend `.env` file has the correct API URL.
+- If you need to change the API URL, edit `frontend/.env.development` and set:
+  ```
+  VITE_API_BASE_URL=http://localhost:4000
+  ```
+
+### 7. Need Help?
+
+If you get stuck, ask an adult or search for help online.  
+You can also check the official docs:
+
+- [Encore Docs](https://encore.dev/docs)
+- [React Docs](https://react.dev/)
+
+---
+
+**You do not need to know anything about databases or Encore to run this project. Just follow the steps above!**
 
 ## Tech Stack
 
@@ -57,6 +147,7 @@ A full-stack application for managing student admissions enquiries with follow-u
 ## Database Schema
 
 ### enquiries
+
 - `id` (SERIAL PRIMARY KEY)
 - `student_name` (TEXT NOT NULL)
 - `class_applied` (TEXT NOT NULL)
@@ -68,6 +159,7 @@ A full-stack application for managing student admissions enquiries with follow-u
 - `created_at` (TIMESTAMP NOT NULL DEFAULT now())
 
 ### followups
+
 - `id` (SERIAL PRIMARY KEY)
 - `enquiry_id` (INT NOT NULL) - Foreign key to enquiries
 - `due_on` (DATE NOT NULL)
@@ -76,6 +168,7 @@ A full-stack application for managing student admissions enquiries with follow-u
 - `created_at` (TIMESTAMP NOT NULL DEFAULT now())
 
 ### Indexes
+
 - `idx_enquiries_stage` ON enquiries(stage)
 - `idx_enquiries_class` ON enquiries(class_applied)
 - `idx_followups_enquiry` ON followups(enquiry_id)
@@ -102,11 +195,13 @@ All endpoints are exposed publicly (`expose: true`) for frontend consumption:
 ### Backend Setup
 
 1. Install Encore CLI:
+
 ```bash
 curl -L https://encore.dev/install.sh | bash
 ```
 
 2. Start the backend (automatically provisions PostgreSQL and runs migrations):
+
 ```bash
 encore run
 ```
@@ -114,6 +209,7 @@ encore run
 The backend will start on `http://localhost:4000` with automatic database setup.
 
 **Important**: Make sure the backend is running before starting the frontend. You should see output similar to:
+
 ```
 API Server listening on http://localhost:4000
 ```
@@ -121,14 +217,22 @@ API Server listening on http://localhost:4000
 ### Frontend Setup
 
 1. Install dependencies:
+
 ```bash
 cd frontend
 npm install
 ```
 
 2. Start the development server:
+
 ```bash
 npm run dev
+```
+
+3. If using the vite:
+
+```bash
+npm vite dev
 ```
 
 The frontend will start on `http://localhost:5173`.
@@ -206,14 +310,18 @@ If you see "Failed to fetch" errors in the frontend:
 ## Common Issues
 
 ### "Failed to fetch" Error
+
 This error occurs when the frontend cannot connect to the backend. Solutions:
+
 1. Start the backend with `encore run`
 2. Verify the backend is running on port 4000
 3. Check the API_BASE_URL in `frontend/config.ts`
 4. Ensure no firewall is blocking the connection
 
 ### Database Connection Issues
+
 If the backend fails to start:
+
 1. Ensure Docker is running for PostgreSQL
 2. Check that no other service is using port 4000
 3. Review the Encore logs for specific error messages
