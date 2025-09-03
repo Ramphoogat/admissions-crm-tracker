@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, Users, UserCheck, UserX, Clock, Calendar } from 'lucide-react';
+import { BarChart3, Users, UserCheck, UserX, Clock, Calendar, AlertCircle } from 'lucide-react';
 import { apiClient } from '../api/client';
 import type { SummaryResponse } from '../api/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 
 const Summary: React.FC = () => {
   const [summary, setSummary] = useState<SummaryResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [classFilter, setClassFilter] = useState('all');
   const { toast } = useToast();
 
@@ -19,13 +22,16 @@ const Summary: React.FC = () => {
   const fetchSummary = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await apiClient.getSummary(classFilter === 'all' ? undefined : classFilter);
       setSummary(response);
     } catch (error) {
       console.error('Failed to fetch summary:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load summary. Please try again.';
+      setError(errorMessage);
       toast({
         title: "Error",
-        description: "Failed to load summary. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -94,10 +100,37 @@ const Summary: React.FC = () => {
     return Math.round((summary.byStage[stage] / summary.total) * 100);
   };
 
+  const handleRetry = () => {
+    fetchSummary();
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-gray-500">Loading summary...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <BarChart3 className="w-8 h-8 text-blue-600" />
+            <h1 className="text-3xl font-bold text-gray-900">Summary Dashboard</h1>
+          </div>
+        </div>
+        
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>{error}</span>
+            <Button variant="outline" size="sm" onClick={handleRetry}>
+              Retry
+            </Button>
+          </AlertDescription>
+        </Alert>
       </div>
     );
   }

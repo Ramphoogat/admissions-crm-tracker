@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Edit, MessageSquare, Phone, Mail } from 'lucide-react';
+import { Edit, MessageSquare, Phone, AlertCircle } from 'lucide-react';
 import { apiClient } from '../api/client';
 import type { Enquiry } from '../api/types';
 import StageBadge from '../components/StageBadge';
@@ -8,11 +8,13 @@ import Filters from '../components/Filters';
 import Pagination from '../components/Pagination';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/components/ui/use-toast';
 
 const EnquiryList: React.FC = () => {
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [stageFilter, setStageFilter] = useState('all');
   const [classFilter, setClassFilter] = useState('all');
@@ -25,6 +27,7 @@ const EnquiryList: React.FC = () => {
   const fetchEnquiries = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await apiClient.listEnquiries({
         stage: stageFilter === 'all' ? undefined : stageFilter,
         class: classFilter === 'all' ? undefined : classFilter,
@@ -36,9 +39,11 @@ const EnquiryList: React.FC = () => {
       setTotalItems(response.total);
     } catch (error) {
       console.error('Failed to fetch enquiries:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load enquiries. Please try again.';
+      setError(errorMessage);
       toast({
         title: "Error",
-        description: "Failed to load enquiries. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -69,10 +74,37 @@ const EnquiryList: React.FC = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
+  const handleRetry = () => {
+    fetchEnquiries();
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-gray-500">Loading enquiries...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-gray-900">Enquiries</h1>
+          <Link to="/enquiries/new">
+            <Button>New Enquiry</Button>
+          </Link>
+        </div>
+        
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>{error}</span>
+            <Button variant="outline" size="sm" onClick={handleRetry}>
+              Retry
+            </Button>
+          </AlertDescription>
+        </Alert>
       </div>
     );
   }

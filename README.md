@@ -108,11 +108,15 @@ curl -L https://encore.dev/install.sh | bash
 
 2. Start the backend (automatically provisions PostgreSQL and runs migrations):
 ```bash
-cd backend
 encore run
 ```
 
 The backend will start on `http://localhost:4000` with automatic database setup.
+
+**Important**: Make sure the backend is running before starting the frontend. You should see output similar to:
+```
+API Server listening on http://localhost:4000
+```
 
 ### Frontend Setup
 
@@ -132,6 +136,15 @@ The frontend will start on `http://localhost:5173`.
 ### Configuration
 
 The frontend API base URL is configured in `frontend/config.ts`. For local development, it points to `http://localhost:4000`.
+
+### Troubleshooting
+
+If you see "Failed to fetch" errors in the frontend:
+
+1. **Check Backend Status**: Ensure the backend is running with `encore run`
+2. **Verify Port**: The backend should be accessible at `http://localhost:4000`
+3. **Check Logs**: Look at the backend terminal for any error messages
+4. **Network Issues**: Ensure no firewall or network issues are blocking the connection
 
 ## Usage
 
@@ -179,6 +192,7 @@ The frontend API base URL is configured in `frontend/config.ts`. For local devel
 - Toast notifications for success/error states
 - Graceful handling of network errors
 - Loading states for better user experience
+- Retry functionality when backend is unavailable
 
 ## Development Notes
 
@@ -187,3 +201,19 @@ The frontend API base URL is configured in `frontend/config.ts`. For local devel
 - All timestamps are stored in UTC
 - Phone validation allows international formats
 - Search is case-insensitive across student name, guardian name, and phone
+- The application includes comprehensive error handling for network connectivity issues
+
+## Common Issues
+
+### "Failed to fetch" Error
+This error occurs when the frontend cannot connect to the backend. Solutions:
+1. Start the backend with `encore run`
+2. Verify the backend is running on port 4000
+3. Check the API_BASE_URL in `frontend/config.ts`
+4. Ensure no firewall is blocking the connection
+
+### Database Connection Issues
+If the backend fails to start:
+1. Ensure Docker is running for PostgreSQL
+2. Check that no other service is using port 4000
+3. Review the Encore logs for specific error messages
