@@ -58,8 +58,13 @@ class APIClient {
       if (contentType && contentType.includes("application/json")) {
         return response.json();
       } else {
-        // If not JSON, throw error with raw text
+        // For methods like DELETE that may not return content, check if response is empty
         const text = await response.text();
+        if (!text.trim()) {
+          // Empty response is valid for DELETE operations
+          return undefined as T;
+        }
+        
         if (text.trim().startsWith("<!DOCTYPE html>")) {
           throw new Error(
             "Received an HTML response instead of JSON. This usually means the API endpoint is incorrect or the frontend is trying to talk to itself. Please check your API_BASE_URL and ensure it points to the backend server."
